@@ -14,11 +14,19 @@ const getStrAfterStr = (str: string | null, aft: string | null): string => {
 	if (aft == null) {
 		return '';
 	}
-	const index = str.indexOf(aft);
+	let index = str.indexOf(aft);
 	if (index == -1) {
 		return '';
 	}
 	return str.substring(index + aft.length);
+};
+
+/**
+ * 获得当前时间戳(10位)
+ * @returns 时间戳
+ */
+const getTimestamp = (): number => {
+	return Math.trunc(Date.now() / 1000);
 };
 
 /**
@@ -31,17 +39,18 @@ const getStrAfterStr = (str: string | null, aft: string | null): string => {
  * let resp = responseGenerator(404)
  */
 const responseGenerator = (code: number, message?: string, data?: object): Response => {
-	const standardCode: Record<number, string> = {
+	const stdCodeMessage: Record<number, string> = {
 		200: 'OK',
 		400: 'Bad Request',
 		401: 'Unauthorized',
 		403: 'Forbidden',
 		404: 'Not Found',
+		405: 'Method Not Allowed',
 		500: 'Internal Server Error',
 	};
-	const resp = {
+	let resp = {
 		code: code,
-		message: message ?? standardCode[code] ?? 'Unknown Error',
+		message: message ?? stdCodeMessage[code] ?? 'Unknown Error',
 		data: data ?? {},
 	};
 	let headers = new Headers();
@@ -49,4 +58,4 @@ const responseGenerator = (code: number, message?: string, data?: object): Respo
 	return new Response(JSON.stringify(resp), { status: code, headers: headers });
 };
 
-export { getStrAfterStr, responseGenerator };
+export { getStrAfterStr, getTimestamp, responseGenerator };

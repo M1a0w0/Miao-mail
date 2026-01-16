@@ -17,6 +17,7 @@
 		"wrangler": "^4.54.0"
 	},
 	"dependencies": {
-		"jsonwebtoken": "^9.0.3"
+		"jsonwebtoken": "^9.0.3",
+		"postal-mime": "^2.7.3"
 	}
 }
