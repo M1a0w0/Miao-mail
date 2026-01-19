@@ -18,10 +18,7 @@ export default {
 	},
 	async email(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
 		try {
-			// 不允许发送邮件到 admin
-			if (!message.to.startsWith('admin')) {
-				await emailHandler(message);
-			}
+			await emailHandler(message);
 		} catch {}
 	},
 } satisfies ExportedHandler<Env>;

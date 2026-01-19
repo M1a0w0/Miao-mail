@@ -38,7 +38,7 @@ const getTimestamp = (): number => {
  * @example <caption>构建一个状态码为 404, 消息为 'Not Found' 的 Response 对象</caption>
  * let resp = responseGenerator(404)
  */
-const responseGenerator = (code: number, message?: string, data?: object): Response => {
+const responseGenerator = (code: number, message?: string, data?: Record<string, unknown>): Response => {
 	const stdCodeMessage: Record<number, string> = {
 		200: 'OK',
 		400: 'Bad Request',

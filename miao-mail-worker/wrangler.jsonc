@@ -8,7 +8,7 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2025-12-25",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"compatibility_flags": ["nodejs_compat"],
 	/**
@@ -22,18 +22,24 @@
 	 * databases, object storage, AI inference, real-time communication and more.
 	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
 	 */
+	"send_email": [
+		{
+			"name": "EMAIL",
+		},
+	],
 	"d1_databases": [
 		{
 			"binding": "prod_d1_tutorial",
 			"database_name": "prod-d1-tutorial",
-			"database_id": "5fe4730d-733f-4736-93ff-2449b8fed5c6"
-		}
+			"database_id": "5fe4730d-733f-4736-93ff-2449b8fed5c6",
+		},
 	],
-	"send_email": [
+	"r2_buckets": [
 		{
-			"name": "EMAIL"
-		}
-	]
+			"binding": "test_bucket",
+			"bucket_name": "test-bucket",
+		},
+	],
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables

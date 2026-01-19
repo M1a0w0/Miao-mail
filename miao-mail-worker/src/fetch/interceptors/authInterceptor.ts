@@ -1,5 +1,6 @@
 import { InterceptorResult } from '.';
-import { getUserInfo } from '../../common/cloudflare/database/tableUser';
+import { getUserByUsername } from '../../common/cloudflare/d1/tableUser';
+
 import { getStrAfterStr } from '../../common/utils/util';
 
 import { verifyJWT } from '../utils/jwtUtil';
@@ -80,7 +81,7 @@ const authIntor = async (req: Request): Promise<InterceptorResult> => {
 		if (verifyResult.isValid) {
 			try {
 				// 获取Token信息
-				let userInfo = await getUserInfo(verifyResult.payload.username, ['token_expire', 'user_role']);
+				let userInfo = await getUserByUsername(verifyResult.payload.username, ['token_expire', 'user_role']);
 				let tokenExpire = userInfo.token_expire as number;
 				let tokenRole = userInfo.user_role as string;
 				// 验证Token是否过期

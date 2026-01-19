@@ -10,14 +10,14 @@ import { usersHanlder } from './usersHandlers';
  * @returns 响应
  */
 const mainHandler = async (req: Request): Promise<Response> => {
-	if (getStrAfterStr(req.url, '/miaomail') != '') {
+	let api = getStrAfterStr(req.url, '/miaomail/');
+	if (api == '') {
 		return responseGenerator(404);
 	}
 	let intorResult = await mainInterceptor(req);
 	if (!intorResult.isAllowed) {
 		return responseGenerator(intorResult.data.code, intorResult.data.message);
 	}
-	let api = getStrAfterStr(req.url, '/miaomail/');
 	switch (api.split('/')[0]) {
 		case 'auth':
 			return await authHanlder(req);

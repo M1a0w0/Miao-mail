@@ -1,5 +1,5 @@
-import { QueryEmptyError } from '../../common/cloudflare/database';
-import { getUserInfo, setUserInfo } from '../../common/cloudflare/database/tableUser';
+import { QueryEmptyError } from '../../common/cloudflare/d1';
+import { getUserByUsername, setUserByUsername } from '../../common/cloudflare/d1/tableUser';
 import { getStrAfterStr, getTimestamp, responseGenerator } from '../../common/utils/util';
 import { signJWT, verifyJWT } from '../utils/jwtUtil';
 
@@ -65,9 +65,8 @@ const tokensHandler = async (req: Request): Promise<Response> => {
  */
 const login = async (username: string, password: string): Promise<Response> => {
 	try {
-		let userInfo = await getUserInfo(username, ['user_password']);
-		let userPassword = userInfo.user_password as string;
-		if (userPassword == password) {
+		let userInfo = await getUserByUsername(username, ['user_password']);
+		if (userInfo.user_password == password) {
 			return responseGenerator(200, 'Login Success', { token: signJWT(username) });
 		} else {
 			return responseGenerator(401, 'Incorrect Username or Password');
@@ -87,7 +86,7 @@ const login = async (username: string, password: string): Promise<Response> => {
  * @returns 登出结果
  */
 const logout = async (username: string): Promise<Response> => {
-	if (await setUserInfo(username, { token_expire: getTimestamp() })) {
+	if (await setUserByUsername(username, { token_expire: getTimestamp() })) {
 		return responseGenerator(200, 'Logout Tokens Success');
 	} else {
 		return responseGenerator(500, 'Logout Tokens Fail, Try Later');

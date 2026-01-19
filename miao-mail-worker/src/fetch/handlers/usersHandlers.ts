@@ -1,4 +1,4 @@
-import { setUserInfo } from '../../common/cloudflare/database/tableUser';
+import { setUserByUsername } from '../../common/cloudflare/d1/tableUser';
 import { getStrAfterStr, getTimestamp, responseGenerator } from '../../common/utils/util';
 import { verifyJWT } from '../utils/jwtUtil';
 
@@ -20,7 +20,7 @@ const usersHanlder = async (req: Request): Promise<Response> => {
 
 /**
  * 密码处理器
- * @description /miaomail/password
+ * @description /miaomail/users/password
  * @param req 传入请求
  * @returns 响应
  */
@@ -59,8 +59,8 @@ const passwordHandler = async (req: Request): Promise<Response> => {
  * @returns 响应
  */
 const changePassword = async (username: string, newPassword: string): Promise<Response> => {
-	if (await setUserInfo(username, { user_password: newPassword })) {
-		if (await setUserInfo(username, { token_expire: getTimestamp() })) {
+	if (await setUserByUsername(username, { user_password: newPassword })) {
+		if (await setUserByUsername(username, { token_expire: getTimestamp() })) {
 			return responseGenerator(200, 'Change Success, Tokens Logout Success');
 		} else {
 			return responseGenerator(200, 'Change Success, Tokens Logout Fail');
