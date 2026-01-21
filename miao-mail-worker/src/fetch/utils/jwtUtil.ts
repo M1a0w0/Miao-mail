@@ -1,18 +1,22 @@
 import { env } from 'cloudflare:workers';
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET_KEY = env.JWT_SECRET_KEY; // 令牌签名密钥
-const algorithm = 'HS256'; // 令牌签名算法
-const expiresIn = '1d'; // 令牌在一天后过期
-const issuer = 'miaomail'; // 令牌签发者: miaomail
+/** 令牌签名密钥 */
+const JWT_SECRET_KEY = env.JWT_SECRET_KEY;
+/** 令牌签名算法 */
+const algorithm = 'HS256';
+/** 令牌在一天后过期 */
+const expiresIn = '1d';
+/** 令牌签发者: miaomail */
+const issuer = 'miaomail';
 
 /**
  * JSON Web Token 验证器(verify)返回的结果类型
  * @property isValid=false 令牌不合法
  * @property isValid=true 令牌合法
- * - payload 载荷
- * - payload.iat 令牌签发时间
- * - payload.username 令牌所属用户
+ * @property payload 载荷
+ * @property payload.iat 令牌签发时间
+ * @property payload.username 令牌所属用户
  */
 type VerifiedJWT =
 	| {

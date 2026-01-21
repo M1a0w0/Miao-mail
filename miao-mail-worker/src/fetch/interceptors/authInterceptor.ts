@@ -1,18 +1,16 @@
 import { InterceptorResult } from '.';
 import { getUserByUsername } from '../../common/cloudflare/d1/tableUser';
-
 import { getStrAfterStr } from '../../common/utils/util';
-
 import { verifyJWT } from '../utils/jwtUtil';
 
 /**
  * 排除列表
- * @description 不进行身份拦截的接口
+ * @description 不进行身份验证的接口
  * @description method='ALL' 时表示所有方法
  */
 const exclude = [
 	{
-		api: '/auth/tokens',
+		api: '/auth/token',
 		method: 'POST',
 	},
 ];
@@ -38,7 +36,7 @@ const adminResource = [
 const excludeChecker = (api: string, method: string): boolean => {
 	return exclude.some((ele) => {
 		if (api.startsWith(ele.api)) {
-			if (ele.method == 'ALL' || method == ele.method) {
+			if (ele.method === 'ALL' || method === ele.method) {
 				return true;
 			}
 		}
@@ -54,7 +52,7 @@ const excludeChecker = (api: string, method: string): boolean => {
 const adminResourceChecker = (api: string, method: string): boolean => {
 	return adminResource.some((ele) => {
 		if (api.startsWith(ele.api)) {
-			if (ele.method == 'ALL' || method == ele.method) {
+			if (ele.method === 'ALL' || method === ele.method) {
 				return true;
 			}
 		}
@@ -75,7 +73,7 @@ const authIntor = async (req: Request): Promise<InterceptorResult> => {
 	}
 	// 验证Token是否提供
 	let token = getStrAfterStr(req.headers.get('Authorization'), 'Bearer ');
-	if (token != '') {
+	if (token !== '') {
 		// 验证Token是否有效
 		let verifyResult = verifyJWT(token);
 		if (verifyResult.isValid) {
@@ -89,7 +87,7 @@ const authIntor = async (req: Request): Promise<InterceptorResult> => {
 					// 检查管理员资源列表
 					if (adminResourceChecker(api, method)) {
 						// 验证Token是否拥有管理员权限
-						if (tokenRole == 'admin') {
+						if (tokenRole === 'admin') {
 							return { isAllowed: true };
 						} else {
 							return { isAllowed: false, data: { code: 403, message: 'Permission Denied' } };

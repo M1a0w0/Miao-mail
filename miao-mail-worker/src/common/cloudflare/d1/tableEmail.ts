@@ -4,9 +4,9 @@ import { d1Insert, d1Select } from '.';
 type MailEmailColumnNames =
 	| 'mail_user_name'
 	| 'mail_type'
-	| 'mail_scheduled'
-	| 'message_from'
-	| 'message_to'
+	| 'resend_id'
+	| 'resend_scheduled_at'
+	| 'resend_last_event'
 	| 'email_from'
 	| 'email_sender'
 	| 'email_reply_to'
@@ -22,17 +22,17 @@ type MailEmailColumnNames =
 	| 'email_text'
 	| 'email_attacchments';
 /** 可查询的电子邮件信息 */
-type MailEmailQuery = [MailEmailColumnNames, ...MailEmailColumnNames[]];
+type MailEmailQuery = [...MailEmailColumnNames[]];
 
 /**
  * 电子邮件参数类型
  * @description [唯一]: 表示此字段在数据表中不允许重复
  * @description [只读]: 表示不允许在数据表中修改此字段
  * @property mail_user_name 邮件所属用户
- * @property mail_type 邮件类型: receive=收件箱 send=发件箱 custom<>=自定义
- * @property mail_scheduled 邮件定时发送
- * @property message_from 对应ForwardableEmailMessage.from
- * @property message_to 对应ForwardableEmailMessage.to
+ * @property mail_type 邮件类型: inbox=收件箱 sent=发件箱 custom<>=自定义
+ * @property resend_id Resend邮件ID
+ * @property resend_scheduled_at Resend邮件定时发送
+ * @property resend_last_event Resend邮件上一个事件 https://resend.com/docs/dashboard/emails/introduction#understand-email-events
  * @property email_from 邮件作者
  * @property email_sender 邮件发送者
  * @property email_reply_to 邮件回复目标
@@ -51,9 +51,9 @@ type MailEmailQuery = [MailEmailColumnNames, ...MailEmailColumnNames[]];
 type MailEmail = {
 	mail_user_name?: string;
 	mail_type?: string;
-	mail_scheduled?: string;
-	message_from?: string;
-	message_to?: string;
+	resend_id?: string;
+	resend_scheduled_at?: string;
+	resend_last_event?: string;
 	email_from?: string;
 	email_sender?: string;
 	email_reply_to?: string;
@@ -85,30 +85,7 @@ const addEmail = async (email: MailEmail): Promise<boolean> => {
  * @param column 要查询的列, 为空时返回所有
  * @returns 邮件列表
  */
-const getEmailByUsername = async (
-	username: string,
-	column: MailEmailQuery = [
-		'mail_user_name',
-		'mail_type',
-		'mail_scheduled',
-		'message_from',
-		'message_to',
-		'email_from',
-		'email_sender',
-		'email_reply_to',
-		'email_to',
-		'email_cc',
-		'email_bcc',
-		'email_subject',
-		'email_message_id',
-		'email_in_reply_to',
-		'email_references',
-		'email_date',
-		'email_html',
-		'email_text',
-		'email_attacchments',
-	],
-): Promise<MailEmail[]> => {
+const getEmailByUsername = async (username: string, column: MailEmailQuery = []): Promise<MailEmail[]> => {
 	return await d1Select('email', column, { mail_user_name: username });
 };
 

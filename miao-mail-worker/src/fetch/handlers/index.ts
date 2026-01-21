@@ -1,6 +1,8 @@
 import { getStrAfterStr, responseGenerator } from '../../common/utils/util';
 import { mainInterceptor } from '../interceptors';
 import { authHanlder } from './authHandlers';
+import { emailsHanlder } from './emailsHandlers';
+import { filesHanlder } from './filesHandlers';
 import { usersHanlder } from './usersHandlers';
 
 /**
@@ -10,19 +12,23 @@ import { usersHanlder } from './usersHandlers';
  * @returns 响应
  */
 const mainHandler = async (req: Request): Promise<Response> => {
-	let api = getStrAfterStr(req.url, '/miaomail/');
-	if (api == '') {
+	let api = getStrAfterStr(req.url, '/miaomail');
+	if (api === '') {
 		return responseGenerator(404);
 	}
 	let intorResult = await mainInterceptor(req);
 	if (!intorResult.isAllowed) {
-		return responseGenerator(intorResult.data.code, intorResult.data.message);
+		return responseGenerator(intorResult.data.code, { message: intorResult.data.message });
 	}
-	switch (api.split('/')[0]) {
+	switch (api.split('/')[1]) {
 		case 'auth':
 			return await authHanlder(req);
 		case 'users':
 			return await usersHanlder(req);
+		case 'emails':
+			return await emailsHanlder(req);
+		case 'files':
+			return await filesHanlder(req);
 		default:
 			return responseGenerator(404);
 	}

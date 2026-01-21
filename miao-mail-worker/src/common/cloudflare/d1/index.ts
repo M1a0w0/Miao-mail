@@ -69,7 +69,10 @@ const d1Insert = async (table: string, data: Record<string, unknown>): Promise<b
 const d1Select = async (table: string, column: string[], condition: Record<string, unknown>): Promise<Record<string, unknown>[]> => {
 	let conditionKeys = Object.keys(condition);
 	let conditionValues = Object.values(condition);
-	let result = await runStatement(`SELECT ${column.join(',')} FROM ${table} WHERE ${conditionKeys.join(' = ?, ')} = ?`, ...conditionValues);
+	let result = await runStatement(
+		`SELECT ${column.length > 0 ? column.join(',') : '*'} FROM ${table} WHERE ${conditionKeys.join(' = ?, ')} = ?`,
+		...conditionValues,
+	);
 	if (result.results.length > 0) {
 		return result.results;
 	} else {

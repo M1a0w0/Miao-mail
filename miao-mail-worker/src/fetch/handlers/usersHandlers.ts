@@ -1,5 +1,5 @@
 import { setUserByUsername } from '../../common/cloudflare/d1/tableUser';
-import { getStrAfterStr, getTimestamp, responseGenerator } from '../../common/utils/util';
+import { checkProperties, getStrAfterStr, getTimestamp, responseGenerator } from '../../common/utils/util';
 import { verifyJWT } from '../utils/jwtUtil';
 
 /**
@@ -9,8 +9,8 @@ import { verifyJWT } from '../utils/jwtUtil';
  * @returns 响应
  */
 const usersHanlder = async (req: Request): Promise<Response> => {
-	let api = getStrAfterStr(req.url, '/miaomail/users/');
-	switch (api.split('/')[0]) {
+	let api = getStrAfterStr(req.url, '/miaomail/users');
+	switch (api.split('/')[1]) {
 		case 'password':
 			return await passwordHandler(req);
 		default:
@@ -28,26 +28,23 @@ const passwordHandler = async (req: Request): Promise<Response> => {
 	let resp = responseGenerator(500);
 	switch (req.method) {
 		case 'PATCH':
-			await req.text().then(async (data) => {
-				try {
-					let dataObject = JSON.parse(data);
-					let newPassword = dataObject.newPassword;
-					if (newPassword == null) {
-						resp = responseGenerator(400);
-					} else {
-						let token = getStrAfterStr(req.headers.get('Authorization'), 'Bearer ');
-						let verifyResult = verifyJWT(token);
-						if (verifyResult.isValid) {
-							resp = await changePassword(verifyResult.payload.username, newPassword);
-						}
+			try {
+				let reqJson: { newPassword: string } = await req.json();
+				if (checkProperties(reqJson, { newPassword: 'string' })) {
+					let token = getStrAfterStr(req.headers.get('Authorization'), 'Bearer ');
+					let verifyResult = verifyJWT(token);
+					if (verifyResult.isValid) {
+						resp = await changePassword(verifyResult.payload.username, reqJson.newPassword);
 					}
-				} catch {
+				} else {
 					resp = responseGenerator(400);
 				}
-			});
+			} catch {
+				resp = responseGenerator(400);
+			}
 			break;
 		default:
-			resp = responseGenerator(405);
+			resp = responseGenerator(405, { headers: { Allow: 'PATCH' } });
 	}
 	return resp;
 };
@@ -61,9 +58,9 @@ const passwordHandler = async (req: Request): Promise<Response> => {
 const changePassword = async (username: string, newPassword: string): Promise<Response> => {
 	if (await setUserByUsername(username, { user_password: newPassword })) {
 		if (await setUserByUsername(username, { token_expire: getTimestamp() })) {
-			return responseGenerator(200, 'Change Success, Tokens Logout Success');
+			return responseGenerator(200, { message: 'Change Success, Tokens Logout Success' });
 		} else {
-			return responseGenerator(200, 'Change Success, Tokens Logout Fail');
+			return responseGenerator(200, { message: 'Change Success, Tokens Logout Fail' });
 		}
 	} else {
 		return responseGenerator(500);

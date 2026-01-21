@@ -1,9 +1,9 @@
 import { d1Select, d1Update } from '.';
 
 /** 用户信息表列名 */
-type MailUserColumnNames = 'user_name' | 'user_password' | 'token_expire' | 'user_role' | 'user_nickname';
+type MailUserColumnNames = 'user_name' | 'user_password' | 'token_expire' | 'user_role' | 'user_nickname' | 'blacklist';
 /** 可查询的用户信息 */
-type MailUserQuery = [MailUserColumnNames, ...MailUserColumnNames[]];
+type MailUserQuery = [...MailUserColumnNames[]];
 
 /**
  * 用户信息参数类型
@@ -21,6 +21,7 @@ type MailUser = {
 	token_expire?: number;
 	user_role?: string;
 	user_nickname?: string;
+	blacklist?: string;
 };
 
 /**
@@ -30,10 +31,7 @@ type MailUser = {
  * @returns 查询结果
  * @throws {Error | QueryEmptyError} 内部出错时抛出Error, 查询结果为空时抛出QueryEmptyError, 均为上层抛出
  */
-const getUserByUsername = async (
-	username: string,
-	column: MailUserQuery = ['user_name', 'user_password', 'token_expire', 'user_role', 'user_nickname'],
-): Promise<MailUser> => {
+const getUserByUsername = async (username: string, column: MailUserQuery = []): Promise<MailUser> => {
 	return (await d1Select('user', column, { user_name: username }))[0];
 };
 

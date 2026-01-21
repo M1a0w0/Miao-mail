@@ -6,7 +6,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "miao-mail-worker",
 	"main": "src/index.ts",
-	"compatibility_date": "2025-12-25",
+	"compatibility_date": "2026-01-14",
 	"observability": {
 		"enabled": true,
 	},
@@ -47,6 +47,9 @@
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
 	// "vars": {  "MY_VARIABLE": "production_value" }
+	"vars": {
+		"DOMAIN": "miaocraft.dev",
+	},
 	/**
 	 * Static Assets
 	 * https://developers.cloudflare.com/workers/static-assets/binding/
